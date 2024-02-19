@@ -9,6 +9,7 @@ const SignUp = () => {
 					type='text'
 					placeholder='Username'
 					name='username'
+					id='username'
 					required
 					className='p-3 outline-none border border-gray rounded-md'
 				/>
@@ -16,6 +17,7 @@ const SignUp = () => {
 					type='email'
 					placeholder='Email'
 					name='email'
+					id='email'
 					required
 					className='p-3 outline-none border border-gray rounded-md'
 				/>
@@ -23,6 +25,7 @@ const SignUp = () => {
 					type='password'
 					placeholder='Password'
 					name='password'
+					id='password'
 					required
 					className='p-3 outline-none border border-gray rounded-md'
 				/>
