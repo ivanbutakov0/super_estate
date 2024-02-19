@@ -1,13 +1,6 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
-type UserType = {
-	username: string
-	email: string
-	password: string
-	date: Date
-}
-
-const userSchema = new mongoose.Schema<UserType>(
+const userSchema = new mongoose.Schema(
 	{
 		username: {
 			type: String,
@@ -29,4 +22,4 @@ const userSchema = new mongoose.Schema<UserType>(
 
 const User = mongoose.model('User', userSchema)
 
-export default User
+module.exports = User

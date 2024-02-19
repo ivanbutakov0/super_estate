@@ -1,13 +1,17 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const userRouter = require('./routes/user.route')
+const authRouter = require('./routes/auth.route.js')
 require('dotenv').config()
 
 const PORT = process.env.PORT || 3000
 
-app.get('/', (req, res) => {
-	res.send('Hello, world!')
-})
+// Middleware for parsing request body
+app.use(express.json())
+
+app.use('/api/user', userRouter)
+app.use('/api/auth', authRouter)
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port http://localhost:${PORT}`)
