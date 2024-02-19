@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 const SignUp = () => {
 	return (
-		<section className='pt-6 px-2 max-w-lg mx-auto text-center'>
+		<section className='pt-10 px-2 max-w-lg mx-auto text-center'>
 			<h1 className='text-3xl font-bold mb-6'>Sign Up</h1>
 			<form className='flex flex-col gap-4 mb-3'>
 				<input
@@ -31,7 +31,7 @@ const SignUp = () => {
 				/>
 				<button
 					type='submit'
-					className='p-3 bg-slate-600 text-white rounded-md hover:bg-slate-500 transition-all'
+					className='p-3 bg-slate-600 text-white rounded-md hover:bg-slate-500 transition-all capitalize'
 				>
 					Sign Up
 				</button>
