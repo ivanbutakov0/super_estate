@@ -3,7 +3,7 @@ import Header from './Header'
 
 const Layout = () => {
 	return (
-		<div>
+		<div className='bg-slate-50 min-h-screen'>
 			<Header />
 			<main>
 				<Outlet />
