@@ -36,11 +36,16 @@ app.use((err, req, res, next) => {
 	})
 })
 
-app.listen(PORT, () => {
-	console.log(`Server is running on port http://localhost:${PORT}`)
-})
+const start = async () => {
+	try {
+		await mongoose.connect(process.env.MONGODB_URL)
 
-mongoose
-	.connect(process.env.MONGODB_URL)
-	.then(() => console.log('Connected!'))
-	.catch(err => console.log(err))
+		app.listen(PORT, () => {
+			console.log(`Server is running on port http://localhost:${PORT}`)
+		})
+	} catch (err) {
+		console.log(err)
+	}
+}
+
+start()
