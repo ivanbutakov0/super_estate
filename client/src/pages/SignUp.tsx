@@ -31,7 +31,6 @@ const SignUp = () => {
 
 			if (!data.success) {
 				setError(data.message)
-				console.log(data)
 				setLoading(false)
 				return
 			}

@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const userRouter = require('./routes/user.route')
 const authRouter = require('./routes/auth.route.js')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 require('dotenv').config()
 
 const PORT = process.env.PORT || 3000
@@ -11,12 +12,16 @@ const PORT = process.env.PORT || 3000
 // Middleware for parsing request body
 app.use(express.json())
 
+// Middleware for parsing cookies
+app.use(cookieParser())
+
 // Enable CORS
 app.use(
 	cors({
 		origin: 'http://localhost:5173',
 		allowedHeaders: ['Content-Type'],
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
+		credentials: true,
 	})
 )
 
