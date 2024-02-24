@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import OAuth from '../components/OAuth'
 import { RootState } from '../redux/store'
 import {
 	signInFailure,
@@ -79,12 +80,7 @@ const SignIn = () => {
 				>
 					{loading ? 'Loading...' : 'Sign In'}
 				</button>
-				<button
-					type='button'
-					className='p-3 bg-red-600 text-white rounded-md capitalize hover:bg-red-500 transition-all'
-				>
-					Continue with Google
-				</button>
+				<OAuth />
 			</form>
 			<div>
 				<span>Don't have an account? </span>
