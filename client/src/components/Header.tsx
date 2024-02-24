@@ -1,7 +1,15 @@
 import { Search } from 'lucide-react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { RootState } from '../redux/store'
 
 const Header = () => {
+	const { currentUser, loading, error } = useSelector(
+		(state: RootState) => state.user
+	)
+
+	console.log(currentUser)
+
 	return (
 		<header className='bg-slate-200 shadow-md'>
 			<div className='flex gap-4 items-center justify-between p-4 max-w-7xl mx-auto'>
@@ -37,7 +45,17 @@ const Header = () => {
 							</Link>
 						</li>
 						<li className='hover:scale-110 transition-all'>
-							<Link to='/sign-in'>Sign In</Link>
+							{currentUser ? (
+								<Link to={`/profile/${currentUser.data._id}`}>
+									<img
+										src={currentUser.data.avatar || ''}
+										alt=''
+										className='rounded-full w-8 h-8 object-cover'
+									/>
+								</Link>
+							) : (
+								<Link to='/sign-in'>Sign In</Link>
+							)}
 						</li>
 					</ul>
 				</nav>

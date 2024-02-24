@@ -8,6 +8,7 @@ export type currentUserType = {
 		email: string
 		createdAt: string
 		updatedAt: string
+		avatar?: string
 	}
 }
 
