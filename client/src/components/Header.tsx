@@ -4,11 +4,7 @@ import { Link } from 'react-router-dom'
 import { RootState } from '../redux/store'
 
 const Header = () => {
-	const { currentUser, loading, error } = useSelector(
-		(state: RootState) => state.user
-	)
-
-	console.log(currentUser)
+	const { currentUser } = useSelector((state: RootState) => state.user)
 
 	return (
 		<header className='bg-slate-200 shadow-md'>
