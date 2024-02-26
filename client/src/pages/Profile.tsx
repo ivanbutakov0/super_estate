@@ -1,26 +1,92 @@
-import { useRef, useState } from 'react'
+import {
+	getDownloadURL,
+	getStorage,
+	ref,
+	uploadBytesResumable,
+} from 'firebase/storage'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { app } from '../firebase'
 import { RootState } from '../redux/store'
 
+type FormDataState = {
+	username?: string
+	email?: string
+	avatar?: string
+}
+
 const Profile = () => {
-	const [formData, setFormData] = useState({})
-	const [file, setFile] = useState<File | null>(null)
+	const [formData, setFormData] = useState<FormDataState>({})
+	const [file, setFile] = useState<File | undefined>(undefined)
 	const fileRef = useRef<HTMLInputElement | null>(null)
+	const [filePerc, setFilePerc] = useState(0)
+	const [fileUploadError, setFileUploadError] = useState(false)
+
+	console.log(formData)
 
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
 	)
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	useEffect(() => {
+		if (file) {
+			handleFileUpload(file)
+		}
+	}, [file])
+
+	const handleFromSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 	}
 
-	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
 			...formData,
 			[e.target.id]: e.target.value,
 		})
+	}
+
+	// handle Image upload to the state
+	const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const selectedFile = e.target.files?.[0]
+		if (selectedFile) {
+			setFile(selectedFile)
+		} else {
+			console.log('no file')
+		}
+	}
+
+	//handle File upload to the firebase
+	const handleFileUpload = async (file: File) => {
+		const storage = getStorage(app)
+		const fileName = new Date().getTime() + file.name
+		const storageRef = ref(storage, fileName)
+		const uploadTask = uploadBytesResumable(storageRef, file)
+
+		uploadTask.on(
+			'state_changed',
+			snapshot => {
+				const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+				setFilePerc(Math.round(progress))
+
+				switch (snapshot.state) {
+					case 'paused':
+						console.log('Upload is paused')
+						break
+					case 'running':
+						console.log('Upload is running')
+						break
+				}
+			},
+			error => {
+				setFileUploadError(true)
+				console.log('error', error)
+			},
+			async () => {
+				const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+				setFormData({ ...formData, avatar: downloadURL })
+			}
+		)
 	}
 
 	const handleDeleteAccount = async () => {}
@@ -32,26 +98,27 @@ const Profile = () => {
 	return (
 		<section className='pt-10 px-2 max-w-lg mx-auto text-center'>
 			<h1 className='text-3xl font-bold mb-10'>Profile</h1>
-			<input
-				type='file'
-				ref={fileRef}
-				onChange={e => {
-					const selectedFile = e.target.files?.[0]
-					if (selectedFile) {
-						setFile(selectedFile)
-					} else {
-						console.log('No file selected')
-					}
-				}}
-				hidden
-			/>
-			<img
-				onClick={() => fileRef?.current?.click()}
-				src={currentUser?.data.avatar}
-				alt='user avatar'
-				className='rounded-full w-24 h-24 object-cover inline-block mb-10 cursor-pointer hover:scale-110 transition-all'
-			/>
-			<form onSubmit={handleSubmit} className='flex flex-col gap-4 mb-3'>
+			<div className='relative'>
+				<input type='file' ref={fileRef} onChange={handleImageUpload} hidden />
+				<img
+					onClick={() => fileRef?.current?.click()}
+					src={formData.avatar || currentUser?.data.avatar}
+					alt='user avatar'
+					className='rounded-full w-24 h-24 object-cover inline-block mb-12 cursor-pointer hover:scale-110 transition-all'
+				/>
+				<p className='mb-4 absolute bottom-0 left-0 right-0'>
+					{fileUploadError ? (
+						<span className='text-red-600'>Upload Failed</span>
+					) : filePerc > 0 && filePerc < 100 ? (
+						`${filePerc}%`
+					) : filePerc === 100 ? (
+						<span className='text-green-600'>Success image upload</span>
+					) : (
+						''
+					)}
+				</p>
+			</div>
+			<form onSubmit={handleFromSubmit} className='flex flex-col gap-4 mb-3'>
 				<input
 					type='text'
 					placeholder='Username'
@@ -60,7 +127,7 @@ const Profile = () => {
 					required
 					defaultValue={currentUser?.data.username}
 					className='p-3 outline-none border border-gray rounded-md'
-					onChange={handleChange}
+					onChange={handleInputChange}
 				/>
 				<input
 					type='email'
@@ -70,7 +137,7 @@ const Profile = () => {
 					required
 					defaultValue={currentUser?.data.email}
 					className='p-3 outline-none border border-gray rounded-md'
-					onChange={handleChange}
+					onChange={handleInputChange}
 				/>
 				<input
 					type='password'
@@ -79,7 +146,6 @@ const Profile = () => {
 					id='password'
 					required
 					className='p-3 outline-none border border-gray rounded-md'
-					onChange={handleChange}
 				/>
 				<button
 					type='submit'
