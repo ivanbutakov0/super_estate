@@ -40,9 +40,7 @@ const signin = async (req, res, next) => {
 		if (!validPassword) {
 			return next(errorHandler(400, 'Wrong password!'))
 		}
-		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-			expiresIn: '24h',
-		})
+		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
 		const { password: pass, ...rest } = user._doc
 		res.cookie('access_token', token, {
 			httpOnly: true,
@@ -61,19 +59,16 @@ const google = async (req, res, next) => {
 		const { name, email, photo } = req.body
 
 		const user = await User.findOne({ email })
-		console.log('user: ', user)
 
 		if (user) {
-			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-				expiresIn: '24h',
-			})
+			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
 			const { password: pass, ...rest } = user._doc
-			res
-				.cookie('access_token', token, {
-					httpOnly: true,
-				})
-				.status(200)
-				.json({ success: true, data: rest })
+
+			res.cookie('access_token', token, {
+				httpOnly: true,
+			})
+
+			res.status(200).json({ success: true, data: rest })
 		} else {
 			const generatedPassword =
 				Math.random().toString(36).slice(-8) +

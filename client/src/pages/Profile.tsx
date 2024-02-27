@@ -5,10 +5,15 @@ import {
 	uploadBytesResumable,
 } from 'firebase/storage'
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { app } from '../firebase'
 import { RootState } from '../redux/store'
+import {
+	updateUserFailure,
+	updateUserStart,
+	updateUserSuccess,
+} from '../redux/user/userSlice'
 
 type FormDataState = {
 	username?: string
@@ -22,9 +27,8 @@ const Profile = () => {
 	const fileRef = useRef<HTMLInputElement | null>(null)
 	const [filePerc, setFilePerc] = useState(0)
 	const [fileUploadError, setFileUploadError] = useState(false)
-
-	console.log(formData)
-
+	const [updateSuccess, setUpdateSuccess] = useState(false)
+	const dispatch = useDispatch()
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
 	)
@@ -37,6 +41,29 @@ const Profile = () => {
 
 	const handleFromSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
+
+		try {
+			dispatch(updateUserStart())
+			const response = await fetch(
+				`/api/user/update/${currentUser?.data._id}`,
+				{
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(formData),
+				}
+			)
+			const data = await response.json()
+			if (!data.success) {
+				dispatch(updateUserFailure(data.message))
+				return
+			}
+			dispatch(updateUserSuccess(data))
+			setUpdateSuccess(true)
+		} catch (error: any) {
+			dispatch(updateUserFailure(error.message))
+		}
 	}
 
 	const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +129,7 @@ const Profile = () => {
 				<input type='file' ref={fileRef} onChange={handleImageUpload} hidden />
 				<img
 					onClick={() => fileRef?.current?.click()}
-					src={formData.avatar || currentUser?.data.avatar}
+					src={formData.avatar || currentUser?.data?.avatar}
 					alt='user avatar'
 					className='rounded-full w-24 h-24 object-cover inline-block mb-12 cursor-pointer hover:scale-110 transition-all'
 				/>
@@ -144,8 +171,8 @@ const Profile = () => {
 					placeholder='Password'
 					name='password'
 					id='password'
-					required
 					className='p-3 outline-none border border-gray rounded-md'
+					onChange={handleInputChange}
 				/>
 				<button
 					type='submit'
@@ -154,6 +181,7 @@ const Profile = () => {
 				>
 					{loading ? 'Loading...' : 'Update'}
 				</button>
+
 				<Link
 					className='p-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-all capitalize disabled:bg-slate-800'
 					to='/'
@@ -161,6 +189,10 @@ const Profile = () => {
 					Create Listing
 				</Link>
 			</form>
+			{error && <p className='text-red-500 py-2'>{error}</p>}
+			{updateSuccess && (
+				<p className='text-green-600 py-2'>User is updated successfully!</p>
+			)}
 			<div className='flex justify-between items-center mb-3'>
 				<button
 					type='button'
@@ -184,7 +216,6 @@ const Profile = () => {
 			>
 				Show listing
 			</button>
-			{error && <p className='text-red-500'>{error}</p>}
 		</section>
 	)
 }
