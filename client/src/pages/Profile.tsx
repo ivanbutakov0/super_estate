@@ -6,10 +6,13 @@ import {
 } from 'firebase/storage'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { app } from '../firebase'
 import { RootState } from '../redux/store'
 import {
+	deleteUserFailure,
+	deleteUserStart,
+	deleteUserSuccess,
 	updateUserFailure,
 	updateUserStart,
 	updateUserSuccess,
@@ -29,6 +32,7 @@ const Profile = () => {
 	const [fileUploadError, setFileUploadError] = useState(false)
 	const [updateSuccess, setUpdateSuccess] = useState(false)
 	const dispatch = useDispatch()
+	const navigate = useNavigate()
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
 	)
@@ -116,7 +120,30 @@ const Profile = () => {
 		)
 	}
 
-	const handleDeleteAccount = async () => {}
+	const handleDeleteAccount = async () => {
+		try {
+			dispatch(deleteUserStart())
+			const response = await fetch(
+				`/api/user/delete/${currentUser?.data._id}`,
+				{
+					method: 'DELETE',
+					credentials: 'include',
+				}
+			)
+
+			const data = await response.json()
+
+			if (!data.success) {
+				dispatch(deleteUserFailure(data.message))
+				return
+			}
+
+			dispatch(deleteUserSuccess())
+		} catch (error: any) {
+			dispatch(deleteUserFailure(error.message))
+			console.log('error', error)
+		}
+	}
 
 	const handleSignOut = async () => {}
 
@@ -191,7 +218,9 @@ const Profile = () => {
 			</form>
 			{error && <p className='text-red-500 py-2'>{error}</p>}
 			{updateSuccess && (
-				<p className='text-green-600 py-2'>User is updated successfully!</p>
+				<p className='text-green-600 py-2'>
+					User has been updated successfully!
+				</p>
 			)}
 			<div className='flex justify-between items-center mb-3'>
 				<button
