@@ -6,7 +6,7 @@ import {
 } from 'firebase/storage'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { app } from '../firebase'
 import { RootState } from '../redux/store'
 import {
@@ -32,7 +32,6 @@ const Profile = () => {
 	const [fileUploadError, setFileUploadError] = useState(false)
 	const [updateSuccess, setUpdateSuccess] = useState(false)
 	const dispatch = useDispatch()
-	const navigate = useNavigate()
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
 	)
