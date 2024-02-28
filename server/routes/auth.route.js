@@ -1,5 +1,10 @@
 const express = require('express')
-const { signup, signin, google } = require('../controllers/auth.controller.js')
+const {
+	signup,
+	signin,
+	google,
+	signOut,
+} = require('../controllers/auth.controller.js')
 const { check } = require('express-validator')
 
 const router = express.Router()
@@ -14,9 +19,8 @@ router.route('/signup').post(
 	],
 	signup
 )
-
 router.route('/signin').post(signin)
-
 router.route('/google').post(google)
+router.route('/signout').get(signOut)
 
 module.exports = router

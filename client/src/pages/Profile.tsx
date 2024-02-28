@@ -13,6 +13,9 @@ import {
 	deleteUserFailure,
 	deleteUserStart,
 	deleteUserSuccess,
+	signOutFailure,
+	signOutStart,
+	signOutSuccess,
 	updateUserFailure,
 	updateUserStart,
 	updateUserSuccess,
@@ -144,7 +147,21 @@ const Profile = () => {
 		}
 	}
 
-	const handleSignOut = async () => {}
+	const handleSignOut = async () => {
+		try {
+			dispatch(signOutStart())
+			const response = await fetch('/api/auth/signout')
+			const data = await response.json()
+			if (!data.success) {
+				dispatch(signOutFailure(data.message))
+				return
+			}
+
+			dispatch(signOutSuccess())
+		} catch (error: any) {
+			dispatch(signOutFailure(error.message))
+		}
+	}
 
 	const handleShowListing = async () => {}
 
