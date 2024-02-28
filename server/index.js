@@ -3,6 +3,7 @@ const app = express()
 const mongoose = require('mongoose')
 const userRouter = require('./routes/user.route')
 const authRouter = require('./routes/auth.route.js')
+const listingRouter = require('./routes/listing.route')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
@@ -28,6 +29,7 @@ app.use(
 // Routes
 app.use('/api/user', userRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/listing', listingRouter)
 
 // Error handling middleware
 app.use((err, req, res, next) => {
