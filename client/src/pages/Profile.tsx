@@ -42,13 +42,15 @@ const Profile = () => {
 	const [filePerc, setFilePerc] = useState(0)
 	const [fileUploadError, setFileUploadError] = useState(false)
 	const [updateSuccess, setUpdateSuccess] = useState(false)
-	const [listings, setListings] = useState([])
+	const [listings, setListings] = useState<ListingsType[] | null>(null)
 	const [listingsLoading, setListingsLoading] = useState(false)
 	const [listingsError, setListingsError] = useState<any>(null)
 	const dispatch = useDispatch()
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
 	)
+
+	console.log(listings)
 
 	useEffect(() => {
 		if (file) {
@@ -195,7 +197,7 @@ const Profile = () => {
 	}
 
 	return (
-		<section className='pt-10 px-2 max-w-lg mx-auto text-center'>
+		<section className='pt-10 py-4 px-2 max-w-lg mx-auto text-center'>
 			<h1 className='text-3xl font-bold mb-10'>Profile</h1>
 			<div className='relative'>
 				<input type='file' ref={fileRef} onChange={handleImageUpload} hidden />
@@ -294,7 +296,8 @@ const Profile = () => {
 				<p className='text-red-600 py-2 mb-4'>{listingsError}</p>
 			)}
 			{listings && (
-				<>
+				<div>
+					<h1 className='text-2xl font-bold mb-4'>Your listings</h1>
 					{listings.map((listing: ListingsType) => (
 						<div
 							key={listing._id}
@@ -330,7 +333,7 @@ const Profile = () => {
 							</div>
 						</div>
 					))}
-				</>
+				</div>
 			)}
 		</section>
 	)
