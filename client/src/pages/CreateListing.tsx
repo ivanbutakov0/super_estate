@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { RootState } from '../redux/store'
 
 interface FormDataState {
 	name: string
@@ -16,8 +19,12 @@ interface FormDataState {
 }
 
 const CreateListing = () => {
+	const { currentUser } = useSelector((state: RootState) => state.user)
 	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<any>(null)
 	const [uploading, setUploading] = useState(false)
+	const [uploadError, setUploadError] = useState(null)
+	const navigate = useNavigate()
 	const [formData, setFormData] = useState<FormDataState>({
 		imageUrls: [],
 		name: '',
@@ -32,10 +39,34 @@ const CreateListing = () => {
 		parking: false,
 		furnished: false,
 	})
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
-		console.log(formData)
+		setLoading(true)
+		try {
+			const response = await fetch('/api/listing/create', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					...formData,
+					userRef: currentUser?.data._id,
+				}),
+			})
+			const data = await response.json()
+			if (!data.success) {
+				setError(data.message)
+				setLoading(false)
+			}
+			console.log(data)
+			setLoading(false)
+			navigate('/')
+		} catch (error: any) {
+			console.log(error)
+			setLoading(false)
+			setError(error.message)
+		}
 	}
 
 	const handleChange = (
@@ -214,12 +245,14 @@ const CreateListing = () => {
 							{uploading ? 'UPLOADING...' : 'UPLOAD'}
 						</button>
 					</div>
+					<p>{uploadError ? uploadError : ''}</p>
 					<button
 						disabled={loading}
 						className='bg-slate-700 hover:bg-slate-600 text-white uppercase p-3 rounded-md transition-all'
 					>
 						{loading ? 'Creating...' : 'Create Listing'}
 					</button>
+					<p className='text-red-500'>{error ? error : ''}</p>
 				</div>
 			</form>
 		</section>
