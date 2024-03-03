@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from '../redux/store'
 
-interface FormDataState {
+export type ListingState = {
 	name: string
 	description: string
 	address: string
@@ -32,7 +32,7 @@ const CreateListing = () => {
 	const [uploadError, setUploadError] = useState<string | null>(null)
 	const [files, setFiles] = useState<File[]>([])
 	const navigate = useNavigate()
-	const [formData, setFormData] = useState<FormDataState>({
+	const [formData, setFormData] = useState<ListingState>({
 		imageUrls: [],
 		name: '',
 		description: '',

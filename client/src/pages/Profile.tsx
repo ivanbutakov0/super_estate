@@ -20,11 +20,19 @@ import {
 	updateUserStart,
 	updateUserSuccess,
 } from '../redux/user/userSlice'
+import { ListingState } from './CreateListing'
 
 type FormDataState = {
 	username?: string
 	email?: string
 	avatar?: string
+}
+
+type ListingsType = ListingState & {
+	_id: string
+	userRef: string
+	createdAt: string
+	updatedAt: string
 }
 
 const Profile = () => {
@@ -34,6 +42,9 @@ const Profile = () => {
 	const [filePerc, setFilePerc] = useState(0)
 	const [fileUploadError, setFileUploadError] = useState(false)
 	const [updateSuccess, setUpdateSuccess] = useState(false)
+	const [listings, setListings] = useState([])
+	const [listingsLoading, setListingsLoading] = useState(false)
+	const [listingsError, setListingsError] = useState<any>(null)
 	const dispatch = useDispatch()
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
@@ -163,7 +174,25 @@ const Profile = () => {
 		}
 	}
 
-	const handleShowListing = async () => {}
+	const handleShowListing = async () => {
+		try {
+			setListingsLoading(true)
+			const response = await fetch(
+				`/api/user/listings/${currentUser?.data._id}`
+			)
+			const data = await response.json()
+			if (!data.success) {
+				setListingsLoading(false)
+				setListingsError(data.message)
+			}
+			setListingsError(null)
+			setListingsLoading(false)
+			setListings(data.data)
+		} catch (error: any) {
+			setListingsLoading(false)
+			setListingsError(error)
+		}
+	}
 
 	return (
 		<section className='pt-10 px-2 max-w-lg mx-auto text-center'>
@@ -256,11 +285,53 @@ const Profile = () => {
 			</div>
 			<button
 				type='button'
-				className='text-green-600 hover:text-green-500 transition-all'
+				className='text-green-600 hover:text-green-500 transition-all mb-4'
 				onClick={handleShowListing}
 			>
-				Show listing
+				{listingsLoading ? 'Loading...' : 'Show listings'}
 			</button>
+			{listingsError && (
+				<p className='text-red-600 py-2 mb-4'>{listingsError}</p>
+			)}
+			{listings && (
+				<>
+					{listings.map((listing: ListingsType) => (
+						<div
+							key={listing._id}
+							className='flex items-center justify-between border border-gray p-3 rounded-md'
+						>
+							<div className='flex items-center gap-3'>
+								<Link to={`/listing/${listing._id}`}>
+									<img
+										src={listing.imageUrls[0]}
+										alt='image of listing'
+										className='w-20 object-contain'
+									/>
+								</Link>
+								<Link to={`/listing/${listing._id}`}>
+									<p className='font-bold capitalize hover:underline transition-all'>
+										{listing.name}
+									</p>
+								</Link>
+							</div>
+							<div className='flex flex-col gap-1'>
+								<button
+									type='button'
+									className='text-red-600 uppercase hover:scale-110 transition-all'
+								>
+									Delete
+								</button>
+								<button
+									type='button'
+									className='text-green-600 uppercase hover:scale-110 transition-all'
+								>
+									Edit
+								</button>
+							</div>
+						</div>
+					))}
+				</>
+			)}
 		</section>
 	)
 }
