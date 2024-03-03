@@ -227,7 +227,7 @@ const Profile = () => {
 
 				<Link
 					className='p-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition-all capitalize disabled:bg-slate-800'
-					to='/'
+					to='/create-listing'
 				>
 					Create Listing
 				</Link>

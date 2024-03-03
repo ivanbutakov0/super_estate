@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import PrivateRoute from './components/PrivateRoute'
 import About from './pages/About'
+import CreateListing from './pages/CreateListing'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
@@ -19,6 +20,7 @@ function App() {
 					<Route path='sign-up' element={<SignUp />} />
 					<Route element={<PrivateRoute />}>
 						<Route path='profile/:id' element={<Profile />} />
+						<Route path='create-listing' element={<CreateListing />}></Route>
 					</Route>
 					<Route path='*' element={<NotFound />} />
 				</Route>
