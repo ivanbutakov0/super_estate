@@ -1,3 +1,9 @@
+import {
+	getDownloadURL,
+	getStorage,
+	ref,
+	uploadBytesResumable,
+} from 'firebase/storage'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -15,7 +21,7 @@ interface FormDataState {
 	bathrooms: number
 	regularPrice: number
 	discountPrice: number
-	imageUrls: File[]
+	imageUrls: string[]
 }
 
 const CreateListing = () => {
@@ -23,7 +29,8 @@ const CreateListing = () => {
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<any>(null)
 	const [uploading, setUploading] = useState(false)
-	const [uploadError, setUploadError] = useState(null)
+	const [uploadError, setUploadError] = useState<string | null>(null)
+	const [files, setFiles] = useState<File[]>([])
 	const navigate = useNavigate()
 	const [formData, setFormData] = useState<FormDataState>({
 		imageUrls: [],
@@ -39,6 +46,8 @@ const CreateListing = () => {
 		parking: false,
 		furnished: false,
 	})
+
+	console.log(formData)
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
@@ -90,6 +99,65 @@ const CreateListing = () => {
 				[e.target.id]: e.target.value,
 			})
 		}
+	}
+
+	const handleImageUpload = () => {
+		if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+			setUploading(true)
+			const promises: Promise<string>[] = []
+
+			for (let i = 0; i < files.length; i++) {
+				promises.push(storeImage(files[i]))
+			}
+			Promise.all(promises)
+				.then((urls: string[]) => {
+					setFormData({
+						...formData,
+						imageUrls: formData.imageUrls.concat(urls),
+					})
+					setUploading(false)
+					setUploadError(null)
+				})
+				.catch((error: any) => {
+					setUploading(false)
+					setUploadError('Image upload failed (2mb max per image)')
+				})
+		} else {
+			setUploadError('Max number of images reached (6)')
+			setUploading(false)
+		}
+	}
+
+	const storeImage = (file: File): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const storage = getStorage()
+			const fileName = new Date().getTime() + file.name
+			const storageRef = ref(storage, fileName)
+			const uploadTask = uploadBytesResumable(storageRef, file)
+			uploadTask.on(
+				'state_changed',
+				snapshot => {
+					const progress =
+						(snapshot.bytesTransferred / snapshot.totalBytes) * 100
+					console.log('Upload is ' + progress + '% done')
+				},
+				error => {
+					reject(error)
+				},
+				() => {
+					getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+						resolve(downloadURL)
+					})
+				}
+			)
+		})
+	}
+
+	const handleDeleteImage = (index: number) => {
+		setFormData({
+			...formData,
+			imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+		})
 	}
 
 	return (
@@ -236,23 +304,51 @@ const CreateListing = () => {
 							accept='image/*'
 							multiple
 							className='cursor-pointer border border-gray p-3 rounded-md'
+							onChange={e => {
+								const newFiles = e.target.files
+								if (newFiles) {
+									setFiles([...newFiles])
+								}
+							}}
 						/>
 						<button
 							type='button'
 							disabled={uploading}
 							className='p-3 border border-green-700 rounded-md text-green-700 uppercase hover:shadow-lg transition-all'
+							onClick={handleImageUpload}
 						>
 							{uploading ? 'UPLOADING...' : 'UPLOAD'}
 						</button>
 					</div>
-					<p>{uploadError ? uploadError : ''}</p>
+					<p className='text-red-600'>{uploadError ? uploadError : ''}</p>
+					{formData.imageUrls.length > 0
+						? formData.imageUrls.map((url, index) => (
+								<div
+									key={url}
+									className='flex items-center justify-between border border-gray p-3 rounded-md'
+								>
+									<img
+										src={url}
+										alt='listing image'
+										className='w-20 h-20 object-contain rounded-md'
+									/>
+									<button
+										type='button'
+										className='uppercase p-3 text-red-600 hover:scale-110 transition-all'
+										onClick={() => handleDeleteImage(index)}
+									>
+										delete
+									</button>
+								</div>
+						  ))
+						: ''}
 					<button
 						disabled={loading}
 						className='bg-slate-700 hover:bg-slate-600 text-white uppercase p-3 rounded-md transition-all'
 					>
 						{loading ? 'Creating...' : 'Create Listing'}
 					</button>
-					<p className='text-red-500'>{error ? error : ''}</p>
+					<p className='text-red-600'>{error ? error : ''}</p>
 				</div>
 			</form>
 		</section>
