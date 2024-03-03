@@ -47,7 +47,6 @@ const CreateListing = () => {
 		furnished: false,
 	})
 
-	console.log(formData)
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
@@ -68,11 +67,9 @@ const CreateListing = () => {
 				setError(data.message)
 				setLoading(false)
 			}
-			console.log(data)
 			setLoading(false)
 			navigate('/')
 		} catch (error: any) {
-			console.log(error)
 			setLoading(false)
 			setError(error.message)
 		}
