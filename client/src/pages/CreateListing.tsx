@@ -68,7 +68,7 @@ const CreateListing = () => {
 				setLoading(false)
 			}
 			setLoading(false)
-			navigate('/')
+			navigate(`/profile/${currentUser?.data._id}`)
 		} catch (error: any) {
 			setLoading(false)
 			setError(error.message)
@@ -118,6 +118,7 @@ const CreateListing = () => {
 				.catch((error: any) => {
 					setUploading(false)
 					setUploadError('Image upload failed (2mb max per image)')
+					console.log(error)
 				})
 		} else {
 			setUploadError('Max number of images reached (6)')

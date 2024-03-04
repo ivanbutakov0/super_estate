@@ -42,15 +42,13 @@ const Profile = () => {
 	const [filePerc, setFilePerc] = useState(0)
 	const [fileUploadError, setFileUploadError] = useState(false)
 	const [updateSuccess, setUpdateSuccess] = useState(false)
-	const [listings, setListings] = useState<ListingsType[] | null>(null)
+	const [listings, setListings] = useState<ListingsType[]>([])
 	const [listingsLoading, setListingsLoading] = useState(false)
 	const [listingsError, setListingsError] = useState<any>(null)
 	const dispatch = useDispatch()
 	const { currentUser, loading, error } = useSelector(
 		(state: RootState) => state.user
 	)
-
-	console.log(listings)
 
 	useEffect(() => {
 		if (file) {
@@ -196,6 +194,24 @@ const Profile = () => {
 		}
 	}
 
+	const handleDeleteListing = async (listingId: string) => {
+		try {
+			const response = await fetch(`/api/listing/delete/${listingId}`, {
+				method: 'DELETE',
+			})
+			const data = await response.json()
+			if (!data.success) {
+				console.log('Delete listing error: ', data.message)
+				return
+			}
+
+			setListings(prev => prev?.filter(listing => listing._id !== listingId))
+			console.log(data)
+		} catch (error) {
+			console.log('Delete listing error: ', error)
+		}
+	}
+
 	return (
 		<section className='pt-10 py-4 px-2 max-w-lg mx-auto text-center'>
 			<h1 className='text-3xl font-bold mb-10'>Profile</h1>
@@ -295,7 +311,7 @@ const Profile = () => {
 			{listingsError && (
 				<p className='text-red-600 py-2 mb-4'>{listingsError}</p>
 			)}
-			{listings && (
+			{listings.length > 0 && (
 				<div>
 					<h1 className='text-2xl font-bold mb-4'>Your listings</h1>
 					{listings.map((listing: ListingsType) => (
@@ -321,6 +337,7 @@ const Profile = () => {
 								<button
 									type='button'
 									className='text-red-600 uppercase hover:scale-110 transition-all'
+									onClick={() => handleDeleteListing(listing._id)}
 								>
 									Delete
 								</button>
