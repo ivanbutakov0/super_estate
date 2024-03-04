@@ -1,6 +1,18 @@
 const Listing = require('../models/listing.model')
 const { errorHandler } = require('../utils/error')
 
+const getListing = async (req, res, next) => {
+	try {
+		const listing = await Listing.findById(req.params.id)
+		if (!listing) {
+			return next(errorHandler(404, 'Listing not found!'))
+		}
+		res.status(200).json({ success: true, data: listing })
+	} catch (error) {
+		next(error)
+	}
+}
+
 const createListing = async (req, res, next) => {
 	try {
 		const listing = await Listing.create(req.body)
@@ -49,6 +61,7 @@ const updateListing = async (req, res, next) => {
 	}
 }
 
+module.exports.getListing = getListing
 module.exports.createListing = createListing
 module.exports.deleteListing = deleteListing
 module.exports.updateListing = updateListing

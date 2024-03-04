@@ -341,12 +341,12 @@ const Profile = () => {
 								>
 									Delete
 								</button>
-								<button
-									type='button'
+								<Link
+									to={`/update-listing/${listing._id}`}
 									className='text-green-600 uppercase hover:scale-110 transition-all'
 								>
 									Edit
-								</button>
+								</Link>
 							</div>
 						</div>
 					))}
