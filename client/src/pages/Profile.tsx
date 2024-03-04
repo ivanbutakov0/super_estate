@@ -28,7 +28,7 @@ type FormDataState = {
 	avatar?: string
 }
 
-type ListingsType = ListingState & {
+export type ListingType = ListingState & {
 	_id: string
 	userRef: string
 	createdAt: string
@@ -42,7 +42,7 @@ const Profile = () => {
 	const [filePerc, setFilePerc] = useState(0)
 	const [fileUploadError, setFileUploadError] = useState(false)
 	const [updateSuccess, setUpdateSuccess] = useState(false)
-	const [listings, setListings] = useState<ListingsType[]>([])
+	const [listings, setListings] = useState<ListingType[]>([])
 	const [listingsLoading, setListingsLoading] = useState(false)
 	const [listingsError, setListingsError] = useState<any>(null)
 	const dispatch = useDispatch()
@@ -314,7 +314,7 @@ const Profile = () => {
 			{listings.length > 0 && (
 				<div>
 					<h1 className='text-2xl font-bold mb-4'>Your listings</h1>
-					{listings.map((listing: ListingsType) => (
+					{listings.map((listing: ListingType) => (
 						<div
 							key={listing._id}
 							className='flex items-center justify-between border border-gray p-3 rounded-md'
