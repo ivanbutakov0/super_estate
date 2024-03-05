@@ -9,6 +9,23 @@ const sayHello = (req, res) => {
 	})
 }
 
+const getUser = async (req, res, next) => {
+	try {
+		const user = await User.findById(req.user.id).select('-password')
+
+		if (!user) {
+			next(errorHandler(404, 'User not found!'))
+		}
+
+		res.status(200).json({
+			success: true,
+			data: user,
+		})
+	} catch (error) {
+		next(error)
+	}
+}
+
 const updateUser = async (req, res, next) => {
 	const { username, email, avatar } = req.body
 
@@ -79,7 +96,7 @@ const getUserListings = async (req, res, next) => {
 	}
 }
 
-module.exports.sayHello = sayHello
+module.exports.getUser = getUser
 module.exports.updateUser = updateUser
 module.exports.deleteUser = deleteUser
 module.exports.getUserListings = getUserListings

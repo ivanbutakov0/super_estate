@@ -1,6 +1,6 @@
 import { Armchair, Bath, BedDouble, MapPin, ParkingSquare } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import SwiperCore from 'swiper'
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -8,10 +8,30 @@ import { Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { ListingType } from './Profile'
 
+type userDataType = {
+	_id: string
+	username: string
+	email: string
+	avatar?: string
+	createdAt: string
+	updatedAt: string
+}
+
 const Listing = () => {
 	SwiperCore.use([Navigation])
 	const [listingData, setListingData] = useState<ListingType | null>(null)
 	const [loading, setLoading] = useState<boolean>(false)
+	const [contactLandlordVisible, setContactLandlordVisible] =
+		useState<boolean>(false)
+	const [message, setMessage] = useState<string>('')
+	const [userData, setUserData] = useState<userDataType>({
+		_id: '',
+		username: '',
+		email: '',
+		avatar: '',
+		createdAt: '',
+		updatedAt: '',
+	})
 	const params = useParams()
 
 	useEffect(() => {
@@ -26,6 +46,23 @@ const Listing = () => {
 					console.log(data.message)
 				}
 				const listing = data.data
+
+				const userResponse = await fetch(`/api/user/${listing.userRef}`)
+				const userData = await userResponse.json()
+				if (!userData.success) {
+					setLoading(false)
+					setUserData({
+						_id: '',
+						username: '',
+						email: '',
+						avatar: '',
+						createdAt: '',
+						updatedAt: '',
+					})
+				} else {
+					setUserData(userData.data)
+				}
+
 				setLoading(false)
 				setListingData(listing)
 			} catch (error) {
@@ -35,6 +72,10 @@ const Listing = () => {
 		}
 		fetchListing()
 	}, [])
+
+	const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setMessage(e.target.value)
+	}
 
 	return (
 		<section className='pb-5'>
@@ -99,12 +140,36 @@ const Listing = () => {
 						<p>{listingData?.furnished ? 'Furnished' : 'Not furnished'}</p>
 					</li>
 				</ul>
-				<button
-					type='button'
-					className='p-3 bg-slate-600 text-white capitalize w-full rounded-md hover:bg-slate-500 transition-all'
-				>
-					Contact landlord
-				</button>
+				{!contactLandlordVisible && (
+					<button
+						type='button'
+						className='p-3 bg-slate-600 text-white uppercase w-full rounded-md hover:bg-slate-500 transition-all'
+						onClick={() => setContactLandlordVisible(true)}
+					>
+						Contact landlord
+					</button>
+				)}
+				{contactLandlordVisible && (
+					<form className='flex flex-col gap-3'>
+						<p>
+							Contact <strong>{userData?.username}</strong> for{' '}
+							<strong>{listingData?.name}</strong>
+						</p>
+						<textarea
+							id='message'
+							placeholder='Enter your message here...'
+							className='w-full p-3 border border-gray rounded-md'
+							onChange={handleChange}
+							required
+						/>
+						<Link
+							to={`mailto:${userData?.email}?subject=Regarding ${listingData?.name}&body=${message}`}
+							className='p-3 bg-slate-600 text-white text-center uppercase w-full rounded-md hover:bg-slate-500 transition-all'
+						>
+							Send message
+						</Link>
+					</form>
+				)}
 			</div>
 		</section>
 	)
