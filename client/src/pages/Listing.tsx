@@ -96,7 +96,12 @@ const Listing = () => {
 				))}
 			</Swiper>
 			<div className='flex flex-col gap-4 max-w-4xl mx-auto p-5'>
-				<h1 className='text-xl font-bold capitalize'>{listingData?.name}</h1>
+				<h1 className='text-xl font-bold capitalize'>
+					{listingData?.name} -{' '}
+					{listingData?.type === 'rent'
+						? `$${listingData.regularPrice} / month`
+						: `$${listingData?.discountPrice}`}
+				</h1>
 				<div className='flex items-center gap-3'>
 					<MapPin width={15} height={15} stroke='#15803d' />
 					<p className='font-medium text-slate-600 text-sm'>
