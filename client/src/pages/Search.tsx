@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ListingItem from '../components/ListingItem'
 import { ListingType } from './Profile'
 
 type searchFormData = {
@@ -143,6 +144,10 @@ const Search = () => {
 		navigate(`/search/?${searchQuery}`)
 	}
 
+	const onShowMoreClick = () => {
+		console.log('show more')
+	}
+
 	return (
 		<section className='flex gap-3'>
 			<form
@@ -257,20 +262,20 @@ const Search = () => {
 						<p className='text-xl text-slate-700'>No listings found</p>
 					)}
 
-					{/* {!loading &&
-            listings &&
-            listings.map((listing) => (
-              <ListingItem key={listing._id} listing={listing} />
-            ))}
+					{!loading &&
+						listings &&
+						listings.map(listing => (
+							<ListingItem key={listing._id} listing={listing} />
+						))}
 
 					{showMore && (
-            <button
-              onClick={onShowMoreClick}
-              className='text-green-700 hover:underline p-7 text-center w-full'
-            >
-              Show more
-            </button>
-          )} */}
+						<button
+							onClick={onShowMoreClick}
+							className='text-green-700 hover:underline p-7 text-center w-full'
+						>
+							Show more
+						</button>
+					)}
 				</div>
 			</div>
 		</section>

@@ -100,7 +100,7 @@ const Listing = () => {
 				<div className='flex items-center gap-3'>
 					<MapPin width={15} height={15} stroke='#15803d' />
 					<p className='font-medium text-slate-600 text-sm'>
-						{listingData?.description}
+						{listingData?.address}
 					</p>
 				</div>
 				<div className='flex gap-3 items-center '>
