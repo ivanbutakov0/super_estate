@@ -168,10 +168,10 @@ const Search = () => {
 	}
 
 	return (
-		<section className='flex gap-3'>
+		<section className='max-md:flex-col flex gap-3'>
 			<form
 				onSubmit={handleSubmit}
-				className='p-6 flex-2 h-screen border-r-2 border-slate-200 space-y-6'
+				className='p-6 flex-2 border-r-2 border-slate-200 space-y-6'
 			>
 				<label className='flex gap-2 items-center'>
 					<span className='text-nowrap'>Search Term:</span>
@@ -268,7 +268,7 @@ const Search = () => {
 					SEARCH
 				</button>
 			</form>
-			<div className='flex-1 p-6'>
+			<div className='flex-1 p-6 min-h-screen'>
 				<h1 className='text-3xl font-semibold text-slate-700 py-2 mb-6 border-b border-slate-200'>
 					Listing results:
 				</h1>
