@@ -1,0 +1,8 @@
+{
+	"rewrites": [
+		{
+			"source": "/api*",
+			"destination": "https://super-estate-backend.vercel.app/api/*"
+		}
+	]
+}
