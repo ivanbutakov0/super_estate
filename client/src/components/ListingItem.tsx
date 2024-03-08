@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { ListingType } from '../pages/Profile'
 
 const ListingItem = ({ listing }: { listing: ListingType }) => {
-	console.log(listing.type)
 	return (
 		<article className='rounded-md shadow-md w-full sm:w-[330px] hover:shadow-lg transition-all overflow-hidden'>
 			<Link to={`/listing/${listing._id}`}>

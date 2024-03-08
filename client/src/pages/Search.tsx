@@ -112,7 +112,6 @@ const Search = () => {
 				[e.target.id]: (e.target as HTMLInputElement).checked,
 			})
 		} else if (e.target.id === 'sort_order') {
-			console.log('sort: ', typeof e.target.value.split('_')[0])
 			const sort = e.target.value.split('_')[0] || 'created_at'
 			const order = e.target.value.split('_')[1] || 'desc'
 
@@ -144,8 +143,28 @@ const Search = () => {
 		navigate(`/search/?${searchQuery}`)
 	}
 
-	const onShowMoreClick = () => {
-		console.log('show more')
+	const onShowMoreClick = async () => {
+		const numberOfListings = listings?.length
+		const startIndex = numberOfListings
+		const params = new URLSearchParams(location.search)
+		params.set('startIndex', String(startIndex))
+		const searchQuery = params.toString()
+		try {
+			const response = await fetch(`/api/listing/?${searchQuery}`)
+			const data = await response.json()
+			if (!data.success) {
+				setError(data.message)
+				return
+			}
+			const newListings = data.data
+			if (newListings.length < 9) {
+				setShowMore(false)
+			}
+
+			setListings([...(listings?.concat(newListings) || newListings)])
+		} catch (error: any) {
+			setError(error.message)
+		}
 	}
 
 	return (
@@ -250,7 +269,9 @@ const Search = () => {
 				</button>
 			</form>
 			<div className='flex-1 p-6'>
-				<h1>Listing results</h1>
+				<h1 className='text-3xl font-semibold text-slate-700 py-2 mb-6 border-b border-slate-200'>
+					Listing results:
+				</h1>
 				<div className='flex flex-wrap gap-4'>
 					{error && <p>{error}</p>}
 					{loading && (
@@ -270,8 +291,9 @@ const Search = () => {
 
 					{showMore && (
 						<button
+							type='button'
 							onClick={onShowMoreClick}
-							className='text-green-700 hover:underline p-7 text-center w-full'
+							className='text-green-700 hover:underline p-3 text-center w-full'
 						>
 							Show more
 						</button>
