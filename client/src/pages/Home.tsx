@@ -70,6 +70,7 @@ const Home = () => {
 					Let's Start now...
 				</Link>
 			</div>
+			{/* Swiper */}
 			<Swiper navigation className='mb-10'>
 				{offerListings &&
 					offerListings.length > 0 &&
