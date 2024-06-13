@@ -39,7 +39,7 @@ const Home = () => {
 
 		const fetchSaleListings = async () => {
 			try {
-				const response = await fetch('/api/listing/?type=sale&limit=4')
+				const response = await fetch('/api/listing/?type=sell&limit=4')
 				const data = await response.json()
 				setSaleListings(data.data)
 			} catch (error) {

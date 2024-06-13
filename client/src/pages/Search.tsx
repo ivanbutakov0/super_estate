@@ -100,7 +100,7 @@ const Search = () => {
 		if (
 			e.target.id === 'all' ||
 			e.target.id === 'rent' ||
-			e.target.id === 'sale'
+			e.target.id === 'sell'
 		) {
 			setSearchFormData({
 				...searchFormData,
@@ -194,7 +194,7 @@ const Search = () => {
 							checked={searchFormData.type === 'all'}
 							onChange={handleChange}
 						/>
-						Rent & Sale
+						Rent & sell
 					</label>
 					<label className='flex gap-2 items-center'>
 						<input
@@ -209,9 +209,9 @@ const Search = () => {
 					<label className='flex gap-2 items-center'>
 						<input
 							type='checkbox'
-							id='sale'
+							id='sell'
 							className='w-5 h-5'
-							checked={searchFormData.type === 'sale'}
+							checked={searchFormData.type === 'sell'}
 							onChange={handleChange}
 						/>
 						Sale
