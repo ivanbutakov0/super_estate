@@ -20,7 +20,7 @@ app.use(cookieParser())
 // Enable CORS
 app.use(
 	cors({
-		origin: 'http://localhost:5173',
+		origin: 'https://super-estate-client.vercel.app/',
 		allowedHeaders: ['Content-Type'],
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
 		credentials: true,
