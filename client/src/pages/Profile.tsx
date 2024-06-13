@@ -181,6 +181,7 @@ const Profile = () => {
 				`/api/user/listings/${currentUser?.data._id}`
 			)
 			const data = await response.json()
+			console.log(data)
 			if (!data.success) {
 				setListingsLoading(false)
 				setListingsError(data.message)
@@ -311,7 +312,7 @@ const Profile = () => {
 			{listingsError && (
 				<p className='text-red-600 py-2 mb-4'>{listingsError}</p>
 			)}
-			{listings.length > 0 && (
+			{listings?.length > 0 && (
 				<div>
 					<h1 className='text-2xl font-bold mb-4'>Your listings</h1>
 					{listings.map((listing: ListingType) => (
